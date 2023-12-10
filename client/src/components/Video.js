@@ -6,6 +6,9 @@ export default function Video() {
     const socket = io("http://localhost:5000");
 
    const [myStream,setMyStream]=useState()
+   const [latency, setLatency] = useState(null);
+    const [receivedFrame, setReceivedFrame] = useState(null);
+
    const currentVideoRef=useRef()
 
    const handleCallUser =async () => {
@@ -16,14 +19,10 @@ export default function Video() {
 
    setMyStream(stream);
 
-   console.log(stream," after conversion", typeof(stream))
-
-
    const videoElement = document.createElement('video');
     //videoElement.srcObject = stream;
 
-    console.log("Video Element ",videoElement);
-
+  
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     
@@ -46,8 +45,6 @@ export default function Video() {
 
     document.body.appendChild(videoElement);
     videoElement.play();
-
-    console.log(stream, " after conversion", typeof (stream));
 }
 useEffect(() => {
     if (currentVideoRef.current && myStream) {
@@ -55,11 +52,26 @@ useEffect(() => {
     }
   }, [myStream]);
 
+  useEffect(() => {
+    // Listen for the 'response' event from the server
+    socket.on('response', data => {
+        // Update the state with the received latency and frame data
+        setLatency(data.latency);
+        setReceivedFrame(data.frame);
+    });
+     return () => {
+      socket.off('response');
+  };
+}, [socket]); 
+
   return (
     <div>
       <h1> This is my Stream</h1>
       <button onClick={handleCallUser}>Click here</button>
       <video ref={currentVideoRef} autoPlay muted playsInline />
+      <h1> Retured Stream</h1>
+      <p>Latency: {latency !== null ? `${latency.toFixed(4)} seconds` : 'Waiting for response...'}</p>
+            {receivedFrame && <img src={`data:image/jpeg;base64,${receivedFrame}`} alt="Received Frame" />}
     </div>
   )
 }
