@@ -20,31 +20,36 @@ export default function Video() {
    setMyStream(stream);
 
    const videoElement = document.createElement('video');
-    //videoElement.srcObject = stream;
+    videoElement.srcObject = stream;
 
   
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     
     videoElement.addEventListener('loadedmetadata', () => {
-        canvas.width = videoElement.videoWidth;
-        canvas.height = videoElement.videoHeight;
-    });
-
-    videoElement.addEventListener('play', () => {
-        const sendFrame = () => {
-            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-            const frame = canvas.toDataURL('image/jpeg', 0.9);
-            console.log("Frame ",frame);
-            socket.emit('stream', { frame: frame });
-            requestAnimationFrame(sendFrame);
-        };
-
-        sendFrame();
-    });
-
-    document.body.appendChild(videoElement);
-    videoElement.play();
+      // Adjust canvas size to a smaller dimension (e.g., 320x240)
+      canvas.width = 320;
+      canvas.height = 240;
+  });
+  
+  videoElement.addEventListener('play', () => {
+      const sendFrame = () => {
+          // Draw a scaled-down version of the video frame
+          context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+          
+          // Adjust JPEG compression quality (e.g., 0.5)
+          const frame = canvas.toDataURL('image/jpeg', 0.5);
+          
+          console.log("Frame ", frame);
+          socket.emit('stream', { frame: frame });
+          requestAnimationFrame(sendFrame);
+      };
+  
+      sendFrame();
+  });
+  
+  document.body.appendChild(videoElement);
+  videoElement.play();
 }
 useEffect(() => {
     if (currentVideoRef.current && myStream) {

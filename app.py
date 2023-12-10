@@ -32,13 +32,10 @@ def process_frame(frame):
     # Decode the image using OpenCV
     image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
     #cv2.imshow('Server Image', image)
-   
-    cv2.waitKey(1000)
 
     #print("Image Shape:", image.shape)
-
-   
-    _, buffer = cv2.imencode('.jpg', image)
+  
+    _, buffer = cv2.imencode('.jpg', image, [int(cv2.IMWRITE_JPEG_QUALITY), 50])
     encoded_image = base64.b64encode(buffer).decode('utf-8')
     print("Encoded ",encoded_image)
     end_time = time.time()
