@@ -22,6 +22,8 @@ export default function Video() {
    const videoElement = document.createElement('video');
     videoElement.srcObject = stream;
 
+    //const videoElement=currentVideoRef.current
+
   
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
