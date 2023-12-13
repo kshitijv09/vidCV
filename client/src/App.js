@@ -1,12 +1,12 @@
 import './App.css';
 
 import Camera from './components/Camera';
-import File from './components/File';
+import File from './components/File/File';
 
 function App() {
   return (
-    <div className="App">
-      <h1> THis is video uploading</h1>
+    <div >
+     
       <File/>
       
       
