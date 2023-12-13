@@ -13,7 +13,7 @@ export default function Video() {
 
    const handleCallUser =async () => {
     const stream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
+      audio: false,
       video: true,
     });
 
@@ -42,7 +42,7 @@ export default function Video() {
           // Adjust JPEG compression quality (e.g., 0.5)
           const frame = canvas.toDataURL('image/jpeg', 0.5);
           
-          console.log("Frame ", frame);
+         /*  console.log("Frame ", frame); */
           socket.emit('stream', { frame: frame });
           requestAnimationFrame(sendFrame);
       };
@@ -50,7 +50,7 @@ export default function Video() {
       sendFrame();
   });
   
-  document.body.appendChild(videoElement);
+  //document.body.appendChild(videoElement);
   videoElement.play();
 }
 useEffect(() => {
@@ -68,17 +68,28 @@ useEffect(() => {
     });
      return () => {
       socket.off('response');
+      
   };
 }, [socket]); 
 
   return (
-    <div>
-      <h1> This is my Stream</h1>
-      <button onClick={handleCallUser}>Click here</button>
-      <video ref={currentVideoRef} autoPlay muted playsInline />
-      <h1> Retured Stream</h1>
-      <p>Latency: {latency !== null ? `${latency.toFixed(4)} seconds` : 'Waiting for response...'}</p>
+    <div className='outer-container'>
+      <div className='heading-container'>
+           <h1> Real-Time dehazing of Hazed Video Stream</h1>
+           <button onClick={handleCallUser}>Click here</button>
+      </div>
+      <div className='video-container'>
+        <div className='local-vid'>
+        <video ref={currentVideoRef} autoPlay muted playsInline />
+        </div>
+        <div className='local-vid'>
+            <h1> Retured Stream</h1>
+            <p>Latency: {latency !== null ? `${latency.toFixed(4)} seconds` : 'Waiting for response...'}</p>
             {receivedFrame && <img src={`data:image/jpeg;base64,${receivedFrame}`} alt="Received Frame" />}
+        </div>
+      </div>
+      
+      
     </div>
   )
 }

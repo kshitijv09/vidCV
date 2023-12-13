@@ -23,28 +23,35 @@ def handle_stream(data):
     #print("Frame is ",frame)
     process_frame(frame)
 
-def process_frame(frame):
+import time
+import base64
+import numpy as np
+import cv2
 
-    start_time= time.time()
+def process_frame(frame):
+    start_time = time.time()
+
     # Convert the base64 encoded image to a NumPy array
     nparr = np.frombuffer(base64.b64decode(frame.split(',')[1]), np.uint8)
-    #print(nparr)
-    # Decode the image using OpenCV
-    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-    #cv2.imshow('Server Image', image)
 
-    #print("Image Shape:", image.shape)
-  
-    _, buffer = cv2.imencode('.jpg', image, [int(cv2.IMWRITE_JPEG_QUALITY), 50])
+    # Decode the image using OpenCV
+    color_image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+    # Convert the color image to grayscale
+    gray_image = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
+
+    # Encode the grayscale image
+    _, buffer = cv2.imencode('.jpg', gray_image, [int(cv2.IMWRITE_JPEG_QUALITY), 50])
     encoded_image = base64.b64encode(buffer).decode('utf-8')
-    #print("Encoded ",encoded_image)
+
     end_time = time.time()
 
     # Calculate and print the latency
     latency = end_time - start_time
-    #print("Latency:", latency, "seconds")
 
+    # Emit the response to the client
     socketio.emit('response', {'latency': latency, 'frame': encoded_image})
+
    
 
 if __name__ == '__main__':
