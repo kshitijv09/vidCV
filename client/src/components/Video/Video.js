@@ -1,4 +1,5 @@
 import React, { useRef, useState,useEffect } from 'react'
+import "./Video.css"
 import { io } from "socket.io-client";
 
 export default function Video() {
@@ -76,20 +77,20 @@ useEffect(() => {
     <div className='outer-container'>
       <div className='heading-container'>
            <h1> Real-Time dehazing of Hazed Video Stream</h1>
-           <button onClick={handleCallUser}>Click here</button>
+           <button  className="stream-btn" onClick={handleCallUser}>Stream Video</button>
+           <p>Latency: {latency !== null ? `${latency.toFixed(4)} seconds` : '0.00000 s'}</p>
       </div>
       <div className='video-container'>
-        <div className='local-vid'>
+        <div className='local vid'>
+          <h1> Local Video</h1>
         <video ref={currentVideoRef} autoPlay muted playsInline />
         </div>
-        <div className='local-vid'>
-            <h1> Retured Stream</h1>
-            <p>Latency: {latency !== null ? `${latency.toFixed(4)} seconds` : 'Waiting for response...'}</p>
-            {receivedFrame && <img src={`data:image/jpeg;base64,${receivedFrame}`} alt="Received Frame" />}
+        <div className='line'></div>
+        <div className='remote vid'>
+            <h1> Returned Stream</h1>
+            {receivedFrame && <img src={`data:image/jpeg;base64,${receivedFrame}`} alt="Received Frame" style={{ width: '640px', height: '480px' }} />}
         </div>
       </div>
-      
-      
     </div>
   )
 }
