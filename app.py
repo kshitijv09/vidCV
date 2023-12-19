@@ -49,6 +49,8 @@ def process_frame(frame):
     # Calculate and print the latency
     latency = end_time - start_time
 
+    print("Enco ",encoded_image)
+
     # Emit the response to the client
     socketio.emit('response', {'latency': latency, 'frame': encoded_image})
 

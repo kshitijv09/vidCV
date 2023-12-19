@@ -31,8 +31,8 @@ export default function Video() {
     
     videoElement.addEventListener('loadedmetadata', () => {
       // Adjust canvas size to a smaller dimension (e.g., 320x240)
-      canvas.width = 320;
-      canvas.height = 240;
+      canvas.width = 480;
+      canvas.height = 360;
   });
   
   videoElement.addEventListener('play', () => {
@@ -65,6 +65,7 @@ useEffect(() => {
     socket.on('response', data => {
         // Update the state with the received latency and frame data
         setLatency(data.latency);
+        console.log("Received frame ",data.frame)
         setReceivedFrame(data.frame);
     });
      return () => {
