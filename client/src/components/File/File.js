@@ -1,20 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import "./File.css"
-import vidicon from "../../assets/video.png"
-import {Circles, CirclesWithBar} from "react-loader-spinner"
+import { io } from 'socket.io-client';
+import { CirclesWithBar } from 'react-loader-spinner';
+import vidicon from '../../assets/video.png';
+import './File.css';
 
 const File = () => {
   const [file, setFile] = useState(null);
   const [videoUrl, setVideoUrl] = useState(null);
-  const [loading,setLoading]=useState(false)
+  const [loading, setLoading] = useState(false);
   const [uploaded, setUploaded] = useState(false);
 
+  const socket = io('http://localhost:5000'); // Replace with your server URL
+
+  useEffect(() => {
+    socket.on('dehazing_complete', () => {
+      console.log('Video dehazing is complete!');
+      setLoading(false);
+    });
+
+    return () => {
+      // Disconnect the socket when the component unmounts
+      socket.disconnect();
+    };
+  }, [socket,loading]);
 
   const handleUpload = async (event) => {
     try {
       event.preventDefault();
-      setLoading(true)
+      setLoading(true);
 
       const formData = new FormData();
       formData.append('video', file);
@@ -23,7 +37,7 @@ const File = () => {
       await axios.post('http://localhost:5000', formData);
 
       // Display a success message or perform any other actions as needed
-     setTimeout(()=>{setLoading(false)},5000)
+      /* setTimeout(() => setLoading(false), 5000); */
     } catch (error) {
       console.error('Error uploading file:', error);
     }
@@ -35,12 +49,9 @@ const File = () => {
 
       // Use axios to download the processed video file from the server
       const response = await axios.get('http://localhost:5000/getVideo', { responseType: 'blob' });
-      
 
       // Create a Blob from the response data
       const blob = new Blob([response.data], { type: 'video/mp4' });
-
-      console.log(blob)
 
       // Create a URL for the Blob
       const videoUrl = URL.createObjectURL(blob);
@@ -53,60 +64,54 @@ const File = () => {
       downloadLink.href = videoUrl;
       downloadLink.download = 'processed_video.mp4';
       downloadLink.click();
-
     } catch (error) {
       console.error('Error downloading file:', error);
     }
   };
 
-  useEffect(()=>{console.log("Download happening")},[loading])
-
   return (
     <div className='container'>
       <div className='upload-container'>
-          <div className='upload-text'>
-             Upload Your hazed video to de-haze
-          </div>
-          <div className='vid-container'>
-            
-            <img src={vidicon} width="55px" className='vidicon'/>
-            <p> Add video to be dehazed</p>
-            
-            <div className='upload-box'>
-              <label className="custom-file-upload">
-              
-              <input type="file" accept=".mp4" onChange={(event) => setFile(event.target.files[0])} />
+        <div className='upload-text'>Upload Your hazed video to de-haze</div>
+        <div className='vid-container'>
+          <img src={vidicon} width='55px' className='vidicon' />
+          <p> Add video to be dehazed</p>
+
+          <div className='upload-box'>
+            <label className='custom-file-upload'>
+              <input type='file' accept='.mp4' onChange={(event) => setFile(event.target.files[0])} />
               Browse
-              </label>
-              <button onClick={handleUpload} disabled={!file} className="custom-file-upload">
+            </label>
+            <button onClick={handleUpload} disabled={!file} className='custom-file-upload'>
               Upload Video
-              </button>
-            </div>
-            {loading ? (
-              <div className='loader'>
-                <CirclesWithBar
-                height="100"
-                width="100"
-                color="#78efc4"
+            </button>
+          </div>
+          {loading ? (
+            <div className='loader'>
+              <CirclesWithBar
+                height='100'
+                width='100'
+                color='#78efc4'
                 wrapperStyle={{}}
-                wrapperClass=""
+                wrapperClass=''
                 visible={true}
-                outerCircleColor=""
-                innerCircleColor=""
-                barColor=""
-                ariaLabel='circles-with-bar-loading'/>
-                </div>
-            
+                outerCircleColor=''
+                innerCircleColor=''
+                barColor=''
+                ariaLabel='circles-with-bar-loading'
+              />
+            </div>
           ) : (
-            <button onClick={handleDownload} disabled={!uploaded} className="custom-file-upload" style={{ marginTop: "25px" }}>
+            <button
+              onClick={handleDownload}
+              /* disabled={!uploaded} */
+              className='custom-file-upload'
+              style={{ marginTop: '25px' }}
+            >
               Download Processed Video
             </button>
           )}
-
-
-          </div>
-       
-         
+        </div>
       </div>
     </div>
   );
