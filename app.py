@@ -39,6 +39,7 @@ def process_frame(frame):
 
     # Convert the color image to grayscale
     gray_image = cv2.cvtColor(color_image, cv2.COLOR_BGR2GRAY)
+    
 
     # Encode the grayscale image
     _, buffer = cv2.imencode('.jpg', gray_image, [int(cv2.IMWRITE_JPEG_QUALITY), 50])
