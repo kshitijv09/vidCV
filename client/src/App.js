@@ -1,12 +1,14 @@
 import './App.css';
-import Video from './components/Video/Video';
+import Video from './components/Video';
 import Camera from './components/Camera';
-import File from './components/File';
+import File from './components/File/File';
 
 function App() {
   return (
     <div >
-      <Video/>
+     
+      <File/>
+      
       
     </div>
   );

@@ -135,7 +135,15 @@ def upload():
         out.release()
 
         # Send the processed video file as a response
-         return send_file('/home/kshitijv09/mern/vidml/processed_video.mp4', as_attachment=False) 
+        return jsonify({'message': 'Frames processed successfully!'}), 200
+
+    except Exception as e:
+        print(f'Error: {str(e)}')
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/getVideo', methods=['GET'])
+def send_processed_video():
+    try:
         with open('/home/kshitijv09/mern/vidml/processed_video.mp4', 'rb') as video_file:
             video_data = video_file.read()
 
@@ -147,7 +155,8 @@ def upload():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True) """
+    app.run(debug=True)
+
 
 
 
@@ -221,4 +230,54 @@ if __name__ == "__main__":
 
 
 
+""" import cv2
+import numpy as np
+import base64 """
+""" import time
 
+from flask import Flask, render_template
+from flask_socketio import SocketIO, emit
+from flask_cors import CORS
+
+app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
+socketio = SocketIO(app, cors_allowed_origins="*")
+
+
+
+@app.route('/')
+def index():
+    return render_template('index.html') 
+
+@socketio.on('stream')
+def handle_stream(data):
+    frame = data['frame']
+    #print("Frame is ",frame)
+    process_frame(frame)
+
+def process_frame(frame):
+
+    start_time= time.time()
+    # Convert the base64 encoded image to a NumPy array
+    nparr = np.frombuffer(base64.b64decode(frame.split(',')[1]), np.uint8)
+    #print(nparr)
+    # Decode the image using OpenCV
+    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    #cv2.imshow('Server Image', image)
+
+    #print("Image Shape:", image.shape)
+  
+    _, buffer = cv2.imencode('.jpg', image, [int(cv2.IMWRITE_JPEG_QUALITY), 50])
+    encoded_image = base64.b64encode(buffer).decode('utf-8')
+    #print("Encoded ",encoded_image)
+    end_time = time.time()
+
+    # Calculate and print the latency
+    latency = end_time - start_time
+    #print("Latency:", latency, "seconds")
+
+    socketio.emit('response', {'latency': latency, 'frame': encoded_image})
+   
+
+if __name__ == '__main__':
+    socketio.run(app, debug=True) """
