@@ -43,10 +43,12 @@ Make sure you have the following installed before running the application:
 
 ## Running the application
 
+1. **Run the application**
+    ```bash
    cd server
    flask run
    cd ../client
-   npm install
+   npm start
 
 
 
